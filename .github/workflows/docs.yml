@@ -1,0 +1,52 @@
+name: docs
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "doc/**"
+      - "src/**"
+      - "pyproject.toml"
+      - "setup.cfg"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v4
+
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: doc/environment.yml
+          cache-environment: true
+          cache-downloads: true
+
+      - name: Build Jupyter Book
+        run: micromamba run -n jupysql-doc jupyter-book build doc --keep-going
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: doc/_build/html
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
