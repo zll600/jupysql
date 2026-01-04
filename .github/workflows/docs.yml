@@ -34,7 +34,7 @@ jobs:
           cache-downloads: true
 
       - name: Build Jupyter Book
-        run: micromamba run -n jupysql-doc jupyter-book build doc --keep-going
+        run: micromamba run -n jupysql-doc jupyter-book build doc
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
