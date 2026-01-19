@@ -11,7 +11,6 @@ from sql.connection.connection import (
     detect_duckdb_summarize_or_select,
 )
 
-
 __all__ = [
     "ConnectionManager",
     "SQLAlchemyConnection",

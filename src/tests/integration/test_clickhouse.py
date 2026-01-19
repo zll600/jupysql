@@ -18,18 +18,12 @@ def test_query_count(ip_with_clickhouse, test_table_name_dict):
 @pytest.mark.parametrize(
     "cell",
     [
-        (
-            "%sqlplot histogram --with plot_something_subset \
-            --table plot_something_subset --column x"
-        ),
-        (
-            "%sqlplot hist --with plot_something_subset \
-            --table plot_something_subset --column x"
-        ),
-        (
-            "%sqlplot histogram --with plot_something_subset \
-            --table plot_something_subset --column x --bins 10"
-        ),
+        ("%sqlplot histogram --with plot_something_subset \
+            --table plot_something_subset --column x"),
+        ("%sqlplot hist --with plot_something_subset \
+            --table plot_something_subset --column x"),
+        ("%sqlplot histogram --with plot_something_subset \
+            --table plot_something_subset --column x --bins 10"),
     ],
     ids=[
         "histogram",
@@ -41,11 +35,9 @@ def test_sqlplot_histogram(ip_with_clickhouse, cell, request, test_table_name_di
     # clean current Axes
     plt.cla()
 
-    ip_with_clickhouse.run_cell(
-        f"%sql --save plot_something_subset\
+    ip_with_clickhouse.run_cell(f"%sql --save plot_something_subset\
          --no-execute SELECT * from {test_table_name_dict['plot_something']} \
-         LIMIT 3"
-    )
+         LIMIT 3")
     out = ip_with_clickhouse.run_cell(cell)
 
     assert type(out.result).__name__ in {"Axes", "AxesSubplot"}
@@ -76,10 +68,8 @@ def test_create_table_with_indexed_df(ip_with_clickhouse, test_table_name_dict):
     assert len(query_out.result) == 15
 
 
-@pytest.mark.xfail(
-    reason="Known table parameter issue with oracledb, \
-                   addressing in #506"
-)
+@pytest.mark.xfail(reason="Known table parameter issue with oracledb, \
+                   addressing in #506")
 @pytest.mark.parametrize(
     "cell",
     [
@@ -102,11 +92,9 @@ def test_create_table_with_indexed_df(ip_with_clickhouse, test_table_name_dict):
 def test_sqlplot_boxplot(ip_with_clickhouse, cell, request, test_table_name_dict):
     # clean current Axes
     plt.cla()
-    ip_with_clickhouse.run_cell(
-        f"%sql --save plot_something_subset --no-execute\
+    ip_with_clickhouse.run_cell(f"%sql --save plot_something_subset --no-execute\
           SELECT * from {test_table_name_dict['plot_something']} \
-            LiMIT 3"
-    )
+            LiMIT 3")
 
     out = ip_with_clickhouse.run_cell(cell)
 

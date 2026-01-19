@@ -34,16 +34,14 @@ import warnings
 def _whishi(conn, table, column, hival, with_=None):
     if not conn:
         conn = sql.connection.ConnectionManager.current
-    template = Template(
-        """
+    template = Template("""
 SELECT COUNT(*), MAX("{{column}}")
 FROM (
     SELECT "{{column}}"
     FROM {{table}}
     WHERE "{{column}}" <= {{hival}}
 ) AS _whishi
-"""
-    )
+""")
 
     query = template.render(table=table, column=column, hival=hival)
 
@@ -55,16 +53,14 @@ FROM (
 def _whislo(conn, table, column, loval, with_=None):
     if not conn:
         conn = sql.connection.ConnectionManager.current
-    template = Template(
-        """
+    template = Template("""
 SELECT COUNT(*), MIN("{{column}}")
 FROM (
     SELECT "{{column}}"
     FROM {{table}}
     WHERE "{{column}}" >= {{loval}}
 ) AS _whislo
-"""
-    )
+""")
 
     query = template.render(table=table, column=column, loval=loval)
 
@@ -76,13 +72,11 @@ FROM (
 def _percentile(conn, table, column, pct, with_=None):
     if not conn:
         conn = sql.connection.ConnectionManager.current.connection
-    template = Template(
-        """
+    template = Template("""
 SELECT
 percentile_disc({{pct}}) WITHIN GROUP (ORDER BY "{{column}}") AS pct,
 FROM {{table}}
-"""
-    )
+""")
     query = template.render(table=table, column=column, pct=pct)
 
     values = conn.execute(query, with_).fetchone()[0]
@@ -90,14 +84,12 @@ FROM {{table}}
 
 
 def _between(conn, table, column, whislo, whishi, with_=None):
-    template = Template(
-        """
+    template = Template("""
 SELECT "{{column}}"
 FROM {{table}}
 WHERE "{{column}}" < {{whislo}}
 OR  "{{column}}" > {{whishi}}
-"""
-    )
+""")
     query = template.render(table=table, column=column, whislo=whislo, whishi=whishi)
 
     results = [float(n[0]) for n in conn.execute(query, with_).fetchall()]
@@ -403,11 +395,9 @@ def histogram(
     if category:
         if isinstance(column, list):
             if len(column) > 1:
-                raise ValueError(
-                    f"""Columns given : {column}.
+                raise ValueError(f"""Columns given : {column}.
                     When using a stacked histogram,
-                    please ensure that you specify only one column."""
-                )
+                    please ensure that you specify only one column.""")
             else:
                 column = " ".join(column)
 
@@ -737,16 +727,14 @@ def _histogram_stacked(
     else:
         filter_query = _filter_aggregate(filter_query_1, filter_query_2)
 
-    template = Template(
-        """
+    template = Template("""
         SELECT {{category}},
         {{cases}}
         FROM {{table}}
         {{filter_query}}
         GROUP BY {{category}}
         ORDER BY {{category}} DESC;
-        """
-    )
+        """)
     query = template.render(
         table=table,
         column=column,

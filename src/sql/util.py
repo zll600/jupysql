@@ -19,7 +19,6 @@ import re
 
 from jinja2 import Template
 
-
 try:
     import toml
 except ModuleNotFoundError:

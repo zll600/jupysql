@@ -3,7 +3,6 @@ from sql import util
 from sql.store import get_all_keys
 from sql.exceptions import RuntimeError, TableNotFoundError
 
-
 ORIGINAL_ERROR = "\nOriginal error message from DB driver:\n"
 CTE_MSG = (
     "If using snippets, you may pass the --with argument explicitly.\n"

@@ -19,27 +19,23 @@ def _summary_stats_one_by_one(conn, table, column, with_=None):
     if not conn:
         conn = sql.connection.ConnectionManager.current.connection
 
-    template_percentile = Template(
-        """
+    template_percentile = Template("""
 SELECT
 percentile_disc(0.25) WITHIN GROUP (ORDER BY "{{column}}") OVER (),
 percentile_disc(0.50) WITHIN GROUP (ORDER BY "{{column}}") OVER (),
 percentile_disc(0.75) WITHIN GROUP (ORDER BY "{{column}}") OVER ()
 FROM {{table}}
-"""
-    )
+""")
     query = template_percentile.render(table=table, column=column)
 
     percentiles = list(conn.execute(query, with_).fetchone())
 
-    template = Template(
-        """
+    template = Template("""
 SELECT
 AVG("{{column}}") AS mean,
 COUNT(*) AS N
 FROM {{table}}
-"""
-    )
+""")
     query = template.render(table=table, column=column)
 
     other = list(conn.execute(query, with_).fetchone())
@@ -52,27 +48,23 @@ def _summary_stats_redshift(conn, table, column, with_=None):
     if not conn:
         conn = sql.connection.ConnectionManager.current.connection
 
-    template_percentile = Template(
-        """
+    template_percentile = Template("""
 SELECT
 approximate percentile_disc(0.25) WITHIN GROUP (ORDER BY "{{column}}"),
 approximate percentile_disc(0.50) WITHIN GROUP (ORDER BY "{{column}}"),
 approximate percentile_disc(0.75) WITHIN GROUP (ORDER BY "{{column}}")
 FROM {{table}}
-"""
-    )
+""")
     query = template_percentile.render(table=table, column=column)
 
     percentiles = list(conn.execute(query, with_).fetchone())
 
-    template = Template(
-        """
+    template = Template("""
 SELECT
 AVG("{{column}}") AS mean,
 COUNT(*) AS N
 FROM {{table}}
-"""
-    )
+""")
     query = template.render(table=table, column=column)
 
     other = list(conn.execute(query, with_).fetchone())
@@ -90,16 +82,14 @@ def _summary_stats_parallel(conn, table, column, with_=None):
 
     driver = conn._get_database_information()["driver"]
 
-    template = Template(
-        """
+    template = Template("""
     SELECT
     percentile_disc([0.25, 0.50, 0.75]) WITHIN GROUP \
     (ORDER BY "{{column}}") AS percentiles,
     AVG("{{column}}") AS mean,
     COUNT(*) AS N
     FROM {{table}}
-"""
-    )
+""")
 
     query = template.render(table=table, column=column)
 

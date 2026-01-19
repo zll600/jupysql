@@ -39,23 +39,19 @@ EXPECTED_STORE_SUGGESTIONS = (
 def test_no_errors_with_stored_query(ip_empty, store_table, query):
     ip_empty.run_cell("%sql duckdb://")
 
-    ip_empty.run_cell(
-        """%%sql
+    ip_empty.run_cell("""%%sql
 CREATE TABLE numbers (
     x FLOAT
 );
 
 INSERT INTO numbers (x) VALUES (1), (2), (3);
-"""
-    )
+""")
 
-    ip_empty.run_cell(
-        f"""
+    ip_empty.run_cell(f"""
         %%sql --save {store_table} --no-execute
         SELECT *
         FROM numbers
-        """
-    )
+        """)
 
     out = ip_empty.run_cell(query.format(store_table, store_table))
     assert out.success

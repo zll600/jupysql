@@ -263,26 +263,16 @@ def test_close_and_connect(
 @pytest.mark.parametrize(
     "cell",
     [
-        (
-            "%sqlplot histogram --with plot_something_subset --table\
-              plot_something_subset --column x"
-        ),
-        (
-            "%sqlplot hist --with plot_something_subset --table\
-              plot_something_subset --column x"
-        ),
-        (
-            "%sqlplot histogram --with plot_something_subset --table\
-              plot_something_subset --column x --bins 10"
-        ),
-        (
-            "%sqlplot histogram --with plot_something_subset --table\
-              plot_something_subset --column x --breaks 0 2 3 4 5"
-        ),
-        (
-            "%sqlplot histogram --with plot_something_subset --table\
-              plot_something_subset --column x --binwidth 1"
-        ),
+        ("%sqlplot histogram --with plot_something_subset --table\
+              plot_something_subset --column x"),
+        ("%sqlplot hist --with plot_something_subset --table\
+              plot_something_subset --column x"),
+        ("%sqlplot histogram --with plot_something_subset --table\
+              plot_something_subset --column x --bins 10"),
+        ("%sqlplot histogram --with plot_something_subset --table\
+              plot_something_subset --column x --breaks 0 2 3 4 5"),
+        ("%sqlplot histogram --with plot_something_subset --table\
+              plot_something_subset --column x --binwidth 1"),
     ],
     ids=[
         "histogram",
@@ -321,10 +311,8 @@ def test_sqlplot_histogram(ip_with_dynamic_db, cell, request, test_table_name_di
     ip_with_dynamic_db = request.getfixturevalue(ip_with_dynamic_db)
     plt.cla()
 
-    ip_with_dynamic_db.run_cell(
-        f"%sql --save plot_something_subset\
-         --no-execute SELECT * from {test_table_name_dict['plot_something']} LIMIT 3"
-    )
+    ip_with_dynamic_db.run_cell(f"%sql --save plot_something_subset\
+         --no-execute SELECT * from {test_table_name_dict['plot_something']} LIMIT 3")
     out = ip_with_dynamic_db.run_cell(cell)
 
     assert type(out.result).__name__ in {"Axes", "AxesSubplot"}
@@ -395,10 +383,8 @@ def test_sqlplot_boxplot(ip_with_dynamic_db, cell, request, test_table_name_dict
     # clean current Axes
     ip_with_dynamic_db = request.getfixturevalue(ip_with_dynamic_db)
     plt.cla()
-    ip_with_dynamic_db.run_cell(
-        f"%sql --save plot_something_subset --no-execute\
-          SELECT * from {test_table_name_dict['plot_something']} LIMIT 3"
-    )
+    ip_with_dynamic_db.run_cell(f"%sql --save plot_something_subset --no-execute\
+          SELECT * from {test_table_name_dict['plot_something']} LIMIT 3")
 
     out = ip_with_dynamic_db.run_cell(cell)
 
@@ -419,10 +405,8 @@ def test_sqlplot_bar(ip_with_dynamic_db, request, test_table_name_dict):
     plt.cla()
 
     ip_with_dynamic_db = request.getfixturevalue(ip_with_dynamic_db)
-    ip_with_dynamic_db.run_cell(
-        f"%sql --save plot_something_subset --no-execute\
-          SELECT * from {test_table_name_dict['plot_something']} LIMIT 3"
-    )
+    ip_with_dynamic_db.run_cell(f"%sql --save plot_something_subset --no-execute\
+          SELECT * from {test_table_name_dict['plot_something']} LIMIT 3")
 
     cell = (
         "%sqlplot bar --with plot_something_subset "
@@ -447,10 +431,8 @@ def test_sqlplot_pie(ip_with_dynamic_db, request, test_table_name_dict):
     plt.cla()
 
     ip_with_dynamic_db = request.getfixturevalue(ip_with_dynamic_db)
-    ip_with_dynamic_db.run_cell(
-        f"%sql --save plot_something_subset --no-execute\
-          SELECT * from {test_table_name_dict['plot_something']} LIMIT 3"
-    )
+    ip_with_dynamic_db.run_cell(f"%sql --save plot_something_subset --no-execute\
+          SELECT * from {test_table_name_dict['plot_something']} LIMIT 3")
 
     cell = (
         "%sqlplot pie --with plot_something_subset "
@@ -500,8 +482,7 @@ def test_sqlplot_pie(ip_with_dynamic_db, request, test_table_name_dict):
 def test_sqlplot_using_schema(ip_with_dynamic_db, request):
     ip_with_dynamic_db = request.getfixturevalue(ip_with_dynamic_db)
     plt.cla()
-    ip_with_dynamic_db.run_cell(
-        """%%sql
+    ip_with_dynamic_db.run_cell("""%%sql
 CREATE SCHEMA IF NOT EXISTS schema1;
 CREATE TABLE IF NOT EXISTS schema1.table1 (
     x INTEGER,
@@ -513,8 +494,7 @@ VALUES
     (1, 2),
     (3, 4),
     (5, 6);
-"""
-    )
+""")
 
     out = ip_with_dynamic_db.run_cell(
         "%sqlplot histogram --table schema1.table1 --column x"
@@ -589,15 +569,13 @@ def test_sqlcmd_test(ip_with_dynamic_db, request, test_table_name_dict):
 def test_profile_data_mismatch(ip_with_dynamic_db, request, capsys):
     ip_with_dynamic_db = request.getfixturevalue(ip_with_dynamic_db)
 
-    ip_with_dynamic_db.run_cell(
-        """
+    ip_with_dynamic_db.run_cell("""
         %%sql sqlite://
         CREATE TABLE people (name varchar(50),age varchar(50),number int,
             country varchar(50),gender_1 varchar(50), gender_2 varchar(50));
         INSERT INTO people VALUES ('joe', '48', 82, 'usa', '0', 'male');
         INSERT INTO people VALUES ('paula', '50', 93, 'uk', '1', 'female');
-        """
-    )
+        """)
 
     out = ip_with_dynamic_db.run_cell("%sqlcmd profile -t people").result
 
@@ -799,11 +777,9 @@ def test_sqlcmd_profile(
     pytest.skip("Skip on unclosed session issue")
     ip_with_dynamic_db = request.getfixturevalue(ip_with_dynamic_db)
 
-    out = ip_with_dynamic_db.run_cell(
-        f"""
+    out = ip_with_dynamic_db.run_cell(f"""
         %sqlcmd profile --table "{test_table_name_dict[table]}"
-        """
-    ).result
+        """).result
 
     stats_table = out._table
     stats_table_html = out._table_html
@@ -972,11 +948,9 @@ def test_sql_error_suggests_using_cte(ip_with_dynamic_db, request):
     ip_with_dynamic_db = request.getfixturevalue(ip_with_dynamic_db)
 
     with pytest.raises(UsageError) as excinfo:
-        ip_with_dynamic_db.run_cell(
-            """
+        ip_with_dynamic_db.run_cell("""
     %%sql
-S"""
-        )
+S""")
 
     assert excinfo.value.error_type == "RuntimeError"
     assert CTE_MSG in str(excinfo.value)
@@ -1002,23 +976,17 @@ S"""
 def test_results_sets_are_closed(ip_with_dynamic_db, request, test_table_name_dict):
     ip_with_dynamic_db = request.getfixturevalue(ip_with_dynamic_db)
 
-    ip_with_dynamic_db.run_cell(
-        f"""%%sql
+    ip_with_dynamic_db.run_cell(f"""%%sql
 CREATE TABLE my_numbers AS SELECT * FROM {test_table_name_dict['numbers']}
-        """
-    )
+        """)
 
-    ip_with_dynamic_db.run_cell(
-        """%%sql
+    ip_with_dynamic_db.run_cell("""%%sql
 SELECT * FROM my_numbers
-        """
-    )
+        """)
 
-    ip_with_dynamic_db.run_cell(
-        """%%sql
+    ip_with_dynamic_db.run_cell("""%%sql
 DROP TABLE my_numbers
-        """
-    )
+        """)
 
 
 @pytest.mark.parametrize(
@@ -1177,13 +1145,11 @@ def test_autocommit_create_table_single_cell(
         "__TABLE_NAME__", __TABLE_NAME__
     )
 
-    result = ip_with_dynamic_db.run_cell(
-        f"""%%sql
+    result = ip_with_dynamic_db.run_cell(f"""%%sql
 {create_table_statement};
 INSERT INTO {__TABLE_NAME__} (number) VALUES (1), (2), (3);
 SELECT * FROM {__TABLE_NAME__};
-"""
-    ).result
+""").result
 
     assert len(result) == 3
 
@@ -1247,23 +1213,17 @@ def test_autocommit_create_table_multiple_cells(
         "__TABLE_NAME__", __TABLE_NAME__
     )
 
-    ip_with_dynamic_db.run_cell(
-        f"""%%sql
+    ip_with_dynamic_db.run_cell(f"""%%sql
 {create_table_statement}
-"""
-    )
+""")
 
-    ip_with_dynamic_db.run_cell(
-        f"""%%sql
+    ip_with_dynamic_db.run_cell(f"""%%sql
 INSERT INTO {__TABLE_NAME__} (number) VALUES (1), (2), (3);
-"""
-    )
+""")
 
-    result = ip_with_dynamic_db.run_cell(
-        f"""%%sql
+    result = ip_with_dynamic_db.run_cell(f"""%%sql
 SELECT * FROM {__TABLE_NAME__};
-"""
-    ).result
+""").result
 
     assert len(result) == 3
 
@@ -1469,12 +1429,10 @@ def test_query_snippet_invalid_function_error_message(
 ):
     # Set up snippet
     ip_with_dynamic_db = request.getfixturevalue(ip_with_dynamic_db)
-    ip_with_dynamic_db.run_cell(
-        f"""
+    ip_with_dynamic_db.run_cell(f"""
         %%sql --save mysnippet
         SELECT * FROM {test_table_name_dict['taxi']}
-        """
-    )
+        """)
 
     # Run query
     with pytest.raises(UsageError) as excinfo:

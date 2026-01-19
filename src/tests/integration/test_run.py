@@ -9,7 +9,6 @@ from sql.connection import SQLAlchemyConnection, DBAPIConnection
 from sql.run.run import run_statements
 from sql import _testing
 
-
 SQLALCHEMY_VERSION = int(sqlalchemy.__version__.split(".")[0])
 
 

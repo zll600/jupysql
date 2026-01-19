@@ -31,7 +31,6 @@ from conftest import runsql
 from sql.connection import PLOOMBER_DOCS_LINK_STR
 import psutil
 
-
 DISPLAYLIMIT_LINK = (
     '<a href="https://jupysql.ploomber.io/en/'
     'latest/api/configuration.html#displaylimit">displaylimit</a>'
@@ -745,15 +744,11 @@ def test_column_local_vars(ip):
 
 
 def test_userns_not_changed(ip):
-    ip.run_cell(
-        dedent(
-            """
+    ip.run_cell(dedent("""
     def function():
         local_var = 'local_val'
         %sql sqlite:// INSERT INTO test VALUES (2, 'bar');
-    function()"""
-        )
-    )
+    function()"""))
     assert "local_var" not in ip.user_ns
 
 
@@ -1298,11 +1293,9 @@ def test_passing_command_ending_with_semicolon(ip_empty, command):
     out = ip_empty.run_cell(f"%sql {command}").result
     assert str(out) == expected_result
 
-    ip_empty.run_cell(
-        f"""%%sql
+    ip_empty.run_cell(f"""%%sql
 {command}
-"""
-    )
+""")
     assert str(out) == expected_result
 
 
@@ -1316,10 +1309,8 @@ def test_jupysql_alias():
 @pytest.mark.xfail(reason="will be fixed once we deprecate the $name parametrization")
 def test_columns_with_dollar_sign(ip_empty):
     ip_empty.run_cell("%sql sqlite://")
-    result = ip_empty.run_cell(
-        """
-    %sql SELECT $2 FROM (VALUES (1, 'one'), (2, 'two'), (3, 'three'))"""
-    )
+    result = ip_empty.run_cell("""
+    %sql SELECT $2 FROM (VALUES (1, 'one'), (2, 'two'), (3, 'three'))""")
 
     html = result.result._repr_html_()
 
@@ -1534,8 +1525,7 @@ def test_sqlalchemy_interpolation_missing_parameter(ip):
 def test_sqlalchemy_insert_literals_with_colon_character(fixture_name, request):
     ip = request.getfixturevalue(fixture_name)
 
-    ip.run_cell(
-        """%%sql
+    ip.run_cell("""%%sql
 CREATE TABLE names (
     name VARCHAR(50) NOT NULL
 );
@@ -1552,8 +1542,7 @@ VALUES
     ('Jennifer'),
     (':Tom'),
     ('Jessica');
-"""
-    )
+""")
 
     result = ip.run_cell("%sql SELECT * FROM names WHERE name = ':Mary'").result
 
@@ -1621,28 +1610,22 @@ def test_can_run_cte_that_references_a_table_whose_name_is_the_same_as_a_snippet
     identifier = "shakespeare_" + str(uuid.uuid4())[:8]
 
     # create table
-    ip.run_cell(
-        f"""%%sql
+    ip.run_cell(f"""%%sql
 create table {identifier} as select * from author where last_name = 'Shakespeare'
-"""
-    )
+""")
 
     # store a snippet with the same name
-    ip.run_cell(
-        f"""%%sql --save {identifier}
+    ip.run_cell(f"""%%sql --save {identifier}
 select * from author where last_name = 'some other last name'
-"""
-    )
+""")
 
     # this should query the table, not the snippet
-    results = ip.run_cell(
-        f"""%%sql
+    results = ip.run_cell(f"""%%sql
 with author_subset as (
     select * from {identifier}
 )
 select * from author_subset
-"""
-    ).result
+""").result
 
     assert results.dict() == {
         "first_name": ("William",),
@@ -1656,28 +1639,22 @@ def test_error_when_running_a_cte_and_passing_with_argument(ip):
     identifier = "shakespeare_" + str(uuid.uuid4())[:8]
 
     # create table
-    ip.run_cell(
-        f"""%%sql
+    ip.run_cell(f"""%%sql
 create table {identifier} as select * from author where last_name = 'Shakespeare'
-"""
-    )
+""")
 
     # store a snippet with the same name
-    ip.run_cell(
-        f"""%%sql --save {identifier}
+    ip.run_cell(f"""%%sql --save {identifier}
 select * from author where last_name = 'some other last name'
-"""
-    )
+""")
 
     with pytest.raises(UsageError) as excinfo:
-        ip.run_cell(
-            f"""%%sql --with {identifier}
+        ip.run_cell(f"""%%sql --with {identifier}
 with author_subset as (
     select * from {identifier}
 )
 select * from author_subset
-"""
-        )
+""")
 
     assert "Cannot use --with with CTEs, remove --with and re-run the cell" in str(
         excinfo.value
@@ -1730,12 +1707,10 @@ def test_error_when_using_section_argument_but_dsn_is_missing(ip_empty, tmp_empt
 def test_error_when_using_section_argument_but_dsn_section_is_missing(
     ip_empty, tmp_empty
 ):
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [section]
 key = value
-"""
-    )
+""")
 
     ip_empty.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
 
@@ -1752,12 +1727,10 @@ key = value
 
 
 def test_error_when_using_section_argument_but_keys_are_invalid(ip_empty, tmp_empty):
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [section]
 key = value
-"""
-    )
+""")
 
     ip_empty.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
 
@@ -1771,12 +1744,10 @@ key = value
 
 
 def test_error_when_using_section_argument_but_values_are_invalid(ip_empty, tmp_empty):
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [section]
 drivername = not-a-driver
-"""
-    )
+""")
 
     ip_empty.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
 
@@ -1788,12 +1759,10 @@ drivername = not-a-driver
 
 
 def test_error_when_using_section_argument_and_alias(ip_empty, tmp_empty):
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [duck]
 drivername = duckdb
-"""
-    )
+""")
 
     ip_empty.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
 
@@ -1807,12 +1776,10 @@ drivername = duckdb
 
 
 def test_connect_to_db_in_connections_file_using_section_argument(ip_empty, tmp_empty):
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [duck]
 drivername = duckdb
-"""
-    )
+""")
 
     ip_empty.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
 
@@ -1825,12 +1792,10 @@ drivername = duckdb
 def test_connect_to_db_in_connections_file_using_section_name_between_square_brackets(
     ip_empty, tmp_empty
 ):
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [duck]
 drivername = duckdb
-"""
-    )
+""")
 
     ip_empty.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
 
@@ -1902,16 +1867,12 @@ def test_spaces_in_variable_name(ip_empty):
 
     ip_empty.run_cell("%sql INSERT INTO 'table with spaces' VALUES (1)")
     ip_empty.run_cell('%sql INSERT INTO "table with spaces" VALUES (2)')
-    ip_empty.run_cell(
-        """%%sql
+    ip_empty.run_cell("""%%sql
 INSERT INTO 'table with spaces' VALUES (3)
-"""
-    )
-    ip_empty.run_cell(
-        """%%sql
+""")
+    ip_empty.run_cell("""%%sql
 INSERT INTO "table with spaces" VALUES (4)
-"""
-    )
+""")
     select_result_with_single_quote = ip_empty.run_cell(
         "%sql SELECT * FROM 'table with spaces'"
     ).result
@@ -1929,26 +1890,18 @@ INSERT INTO "table with spaces" VALUES (4)
         (" SELECT * FROM test"),
         ("  SELECT * FROM test"),
         ("  SELECT  * FROM test"),
-        (
-            """
-SELECT * FROM test"""
-        ),
-        (
-            """
+        ("""
+SELECT * FROM test"""),
+        ("""
 
-SELECT * FROM test"""
-        ),
-        (
-            """
+SELECT * FROM test"""),
+        ("""
 SELECT
- * FROM test"""
-        ),
-        (
-            """
+ * FROM test"""),
+        ("""
 
 SELECT
- * FROM test"""
-        ),
+ * FROM test"""),
     ],
 )
 def test_whitespaces_linebreaks_near_first_token(ip, query):
@@ -1965,10 +1918,8 @@ def test_whitespaces_linebreaks_near_first_token(ip, query):
     out = ip.run_cell("%sql {{query}}").result
     assert str(out) == expected_result
 
-    out = ip.run_cell(
-        """%%sql
-{{query}}"""
-    ).result
+    out = ip.run_cell("""%%sql
+{{query}}""").result
     assert str(out) == expected_result
 
 
@@ -1990,17 +1941,13 @@ def test_summarize_in_duckdb(ip_empty):
 
     ip_empty.run_cell("%sql duckdb://")
     ip_empty.run_cell("%sql CREATE TABLE table1 (id INTEGER, x INTEGER)")
-    ip_empty.run_cell(
-        """%%sql
-INSERT INTO table1 VALUES (1, -1), (2, 1), (3, 2)"""
-    )
+    ip_empty.run_cell("""%%sql
+INSERT INTO table1 VALUES (1, -1), (2, 1), (3, 2)""")
     out = ip_empty.run_cell("%sql SUMMARIZE table1").result
     assert out.dict() == expected_result
 
-    out = ip_empty.run_cell(
-        """%%sql
-SUMMARIZE table1"""
-    ).result
+    out = ip_empty.run_cell("""%%sql
+SUMMARIZE table1""").result
     assert out.dict() == expected_result
 
 
@@ -2232,10 +2179,8 @@ def test_warn_when_using_snippets_in_non_select_command(
 ):
     ip_empty.run_cell("%sql duckdb://")
     ip_empty.run_cell("%sql create table languages (name VARCHAR, rating INTEGER)")
-    ip_empty.run_cell(
-        """%%sql
-INSERT INTO languages VALUES ('Python', 1), ('Java', 0), ('OCaml', 2)"""
-    )
+    ip_empty.run_cell("""%%sql
+INSERT INTO languages VALUES ('Python', 1), ('Java', 0), ('OCaml', 2)""")
 
     ip_empty.run_cell(sql_snippet)
 
@@ -2590,22 +2535,16 @@ LINE 1: SELECT * FROM snippet;
 def test_table_does_not_exist_with_snippet_error(
     ip_empty, query, error_type, error_message
 ):
-    ip_empty.run_cell(
-        """%load_ext sql
-%sql duckdb://"""
-    )
+    ip_empty.run_cell("""%load_ext sql
+%sql duckdb://""")
     # Create temp table
-    ip_empty.run_cell(
-        """%%sql
+    ip_empty.run_cell("""%%sql
 CREATE TABLE temp AS
-SELECT * FROM penguins.csv"""
-    )
+SELECT * FROM penguins.csv""")
 
     # Create snippet
-    ip_empty.run_cell(
-        """%%sql --save snippet
-SELECT * FROM penguins.csv;"""
-    )
+    ip_empty.run_cell("""%%sql --save snippet
+SELECT * FROM penguins.csv;""")
 
     # Run query
     with pytest.raises(Exception) as excinfo:
@@ -2663,13 +2602,11 @@ def test_var_substitution_save_with(ip):
     ip.run_cell(
         "%sql --save {{snippet_two}} SELECT * FROM author WHERE {{col}} = 'Bertold' "
     )
-    out = ip.run_cell(
-        """%%sql --with {{snippet_one}} --with {{snippet_two}}
+    out = ip.run_cell("""%%sql --with {{snippet_one}} --with {{snippet_two}}
 SELECT * FROM {{snippet_one}}
 UNION
 SELECT * FROM {{snippet_two}}
-"""
-    ).result
+""").result
 
     assert out[1] == (
         "William",
@@ -2712,12 +2649,10 @@ def test_var_substitution_close_connection_with_alias(ip, tmp_empty, close_cell)
 
 
 def test_var_substitution_section(ip_empty, tmp_empty):
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [duck]
 drivername = duckdb
-"""
-    )
+""")
     ip_empty.user_global_ns["section"] = "duck"
 
     ip_empty.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
