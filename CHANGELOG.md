@@ -2,6 +2,8 @@
 
 ## 0.11.2dev
 
+* [Fix] Upgrade `pgspecial` and `psycopg` version ([#367](https://github.com/ploomber/jupysql/issues/367))
+
 ## 0.11.1 (2025-03-25)
 
 * [Fix] No longer showing the Slack link in error messages
