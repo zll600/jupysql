@@ -18,14 +18,18 @@ ignore_substrings = [
     "https://ourworldindata.org",
 ]
 
+[tool.black]
+# Exclude notebooks from direct black processing; nbqa handles them separately
+extend-exclude = '\.ipynb$'
+
 [tool.nbqa.addopts]
 flake8 = [
     # notebooks allow non-top imports
     "--extend-ignore=E402",
     # jupysql notebooks might have "undefined name" errors
     # due to the << operator
-    # W503, W504 ignore line break after/before 
-    # binary operator since they are conflicting 
+    # W503, W504 ignore line break after/before
+    # binary operator since they are conflicting
     "--ignore=F821, W503, W504",
 ]
 

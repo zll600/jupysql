@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.15.1
+    jupytext_version: 1.19.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -341,11 +341,9 @@ So a typical test will look like this:
 
 ```{code-cell} ipython3
 def test_something(ip):
-    result = ip.run_cell(
-        """%%sql
+    result = ip.run_cell("""%%sql
     SELECT * FROM test
-    """
-    )
+    """)
 
     assert result.success
 ```
@@ -532,6 +530,7 @@ CREATE WAREHOUSE <wh_name> WITH WAREHOUSE_SIZE = <wh_size>
 ```
 
 Now, initiate a connection using your new warehouse and run your tests/queries.
+
 +++
 
 ## SQL transpilation

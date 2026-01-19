@@ -12,29 +12,23 @@ def setup_no_current_connect(monkeypatch):
 
 @pytest.fixture
 def ip_snippets(ip):
-    ip.run_cell(
-        """
+    ip.run_cell("""
 %%sql --save a --no-execute
 SELECT *
 FROM number_table
-"""
-    )
-    ip.run_cell(
-        """
+""")
+    ip.run_cell("""
             %%sql --save b --no-execute
             SELECT *
             FROM a
             WHERE x > 5
-            """
-    )
-    ip.run_cell(
-        """
+            """)
+    ip.run_cell("""
             %%sql --save c --no-execute
             SELECT *
             FROM a
             WHERE x < 5
-            """
-    )
+            """)
     yield ip
 
 
@@ -212,15 +206,10 @@ def test_branch_root(is_dialect_support_backtick, monkeypatch):
     sql_store.store("first_b", "SELECT * FROM b WHERE y > 10")
 
     result = sql_store.render("SELECT * FROM third", with_=["third_a", "first_b"])
-    assert (
-        str(result)
-        == "WITH {0}first_a{0} AS (SELECT * FROM a WHERE x > 10), \
+    assert str(result) == "WITH {0}first_a{0} AS (SELECT * FROM a WHERE x > 10), \
 {0}second_a{0} AS (SELECT * FROM first_a WHERE x > 20), \
 {0}third_a{0} AS (SELECT * FROM second_a WHERE x > 30), \
-{0}first_b{0} AS (SELECT * FROM b WHERE y > 10)SELECT * FROM third".format(
-            identifier
-        )
-    )
+{0}first_b{0} AS (SELECT * FROM b WHERE y > 10)SELECT * FROM third".format(identifier)
 
 
 @pytest.mark.parametrize(

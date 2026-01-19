@@ -3,7 +3,6 @@ from os import environ
 
 import nox
 
-
 # list non-setup sessions here
 nox.options.sessions = ["test_postgres"]
 
@@ -23,7 +22,7 @@ if VENV_BACKEND == "conda":
 
 INTEGRATION_CONDA_DEPENDENCIES = [
     "pyarrow",
-    "psycopg2",
+    "psycopg",
     "pymysql",
     "oracledb",
     "pip",
@@ -31,7 +30,7 @@ INTEGRATION_CONDA_DEPENDENCIES = [
 
 INTEGRATION_PIP_DEPENDENCIES = [
     "dockerctx",
-    "pgspecial==2.0.1",
+    "pgspecial",
     "pyodbc==4.0.34",
     "sqlalchemy-pytds",
     "python-tds",

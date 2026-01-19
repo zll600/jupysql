@@ -12,7 +12,6 @@ from jupysql_plugin.widgets import ConnectorWidget
 import duckdb
 import sqlite3
 
-
 VALID_COMMANDS_MESSAGE = (
     "Valid commands are: tables, columns, test, profile, explore, snippets, connect"
 )
@@ -36,30 +35,24 @@ def _get_row_string(row, column_name):
 @pytest.fixture
 def ip_snippets(ip):
     ip.run_cell("%sql sqlite://")
-    ip.run_cell(
-        """
+    ip.run_cell("""
 %%sql --save high_price --no-execute
 SELECT *
 FROM "test_store"
 WHERE price >= 1.50
-"""
-    )
-    ip.run_cell(
-        """
+""")
+    ip.run_cell("""
 %%sql --save high_price_a --no-execute
 SELECT *
 FROM "high_price"
 WHERE symbol == 'a'
-"""
-    )
-    ip.run_cell(
-        """
+""")
+    ip.run_cell("""
 %%sql --save high_price_b --no-execute
 SELECT *
 FROM "high_price"
 WHERE symbol == 'b'
-"""
-    )
+""")
     yield ip
 
 
@@ -85,14 +78,12 @@ def test_snippet_ip(ip):
 @pytest.fixture
 def sample_schema_with_table(ip_empty):
     ip_empty.run_cell("%sql duckdb://")
-    ip_empty.run_cell(
-        """%%sql
+    ip_empty.run_cell("""%%sql
 CREATE SCHEMA schema1;
 CREATE TABLE schema1.table1 (x INT, y TEXT);
 INSERT INTO schema1.table1 VALUES (1, 'one');
 INSERT INTO schema1.table1 VALUES (2, 'two');
-"""
-    )
+""")
 
 
 @pytest.mark.parametrize(
@@ -212,11 +203,9 @@ def test_tables_with_schema(ip, tmp_empty):
     conn = SQLAlchemyConnection(engine=create_engine("sqlite:///my.db"))
     conn.execute("CREATE TABLE numbers (some_number FLOAT)")
 
-    ip.run_cell(
-        """%%sql
+    ip.run_cell("""%%sql
 ATTACH DATABASE 'my.db' AS some_schema
-"""
-    )
+""")
 
     out = ip.run_cell("%sqlcmd tables --schema some_schema").result._repr_html_()
 
@@ -229,11 +218,9 @@ def test_tables_with_schema_variable_substitution(ip, tmp_empty):
 
     ip.user_global_ns["schema"] = "some_schema"
 
-    ip.run_cell(
-        """%%sql
+    ip.run_cell("""%%sql
 ATTACH DATABASE 'my.db' AS {{schema}}
-"""
-    )
+""")
 
     out = ip.run_cell("%sqlcmd tables --schema {{schema}}").result._repr_html_()
 
@@ -266,11 +253,9 @@ def test_columns_with_schema(ip, tmp_empty, arguments):
     conn = SQLAlchemyConnection(engine=create_engine("sqlite:///my.db"))
     conn.execute("CREATE TABLE numbers (some_number FLOAT)")
 
-    ip.run_cell(
-        """%%sql
+    ip.run_cell("""%%sql
 ATTACH DATABASE 'my.db' AS some_schema
-"""
-    )
+""")
 
     out = ip.run_cell(f"%sqlcmd columns {arguments}").result._repr_html_()
 
@@ -288,11 +273,9 @@ def test_columns_with_schema_variable_substitution(ip, tmp_empty, arguments):
     ip.user_global_ns["table"] = "numbers"
     ip.user_global_ns["schema"] = "some_schema"
 
-    ip.run_cell(
-        """%%sql
+    ip.run_cell("""%%sql
 ATTACH DATABASE 'my.db' AS {{schema}}
-"""
-    )
+""")
 
     out = ip.run_cell(f"%sqlcmd columns {arguments}").result._repr_html_()
 
@@ -308,8 +291,7 @@ ATTACH DATABASE 'my.db' AS {{schema}}
 )
 def test_table_profile(ip_with_connections, tmp_empty, conn):
     ip_with_connections.run_cell(f"%sql {conn}")
-    ip_with_connections.run_cell(
-        """
+    ip_with_connections.run_cell("""
     %%sql
     CREATE TABLE numbers (rating float, price float, number int, word varchar(50));
     INSERT INTO numbers VALUES (14.44, 2.48, 82, 'a');
@@ -320,8 +302,7 @@ def test_table_profile(ip_with_connections, tmp_empty, conn):
     INSERT INTO numbers VALUES (11.5, 0.2, 84, '   ');
     INSERT INTO numbers VALUES (11.1, 0.3, 90, 'a');
     INSERT INTO numbers VALUES (12.9, 0.31, 86, '');
-    """
-    )
+    """)
 
     expected = {
         "count": [8, 8, 8, 8],
@@ -365,8 +346,7 @@ def test_table_profile(ip_with_connections, tmp_empty, conn):
 )
 def test_table_profile_with_substitution(ip_with_connections, tmp_empty, conn):
     ip_with_connections.run_cell(f"%sql {conn}")
-    ip_with_connections.run_cell(
-        """
+    ip_with_connections.run_cell("""
     %%sql
     CREATE TABLE numbers (rating float, price float, number int, word varchar(50));
     INSERT INTO numbers VALUES (14.44, 2.48, 82, 'a');
@@ -377,8 +357,7 @@ def test_table_profile_with_substitution(ip_with_connections, tmp_empty, conn):
     INSERT INTO numbers VALUES (11.5, 0.2, 84, '   ');
     INSERT INTO numbers VALUES (11.1, 0.3, 90, 'a');
     INSERT INTO numbers VALUES (12.9, 0.31, 86, '');
-    """
-    )
+    """)
 
     expected = {
         "count": [8, 8, 8, 8],
@@ -424,8 +403,7 @@ def test_table_profile_with_substitution(ip_with_connections, tmp_empty, conn):
 )
 def test_table_profile_with_stdev(ip_with_connections, tmp_empty, conn):
     ip_with_connections.run_cell(f"%sql {conn}")
-    ip_with_connections.run_cell(
-        """
+    ip_with_connections.run_cell("""
     %%sql
     CREATE TABLE numbers (rating float, price float, number int, word varchar(50));
     INSERT INTO numbers VALUES (14.44, 2.48, 82, 'a');
@@ -436,8 +414,7 @@ def test_table_profile_with_stdev(ip_with_connections, tmp_empty, conn):
     INSERT INTO numbers VALUES (11.5, 0.2, 84, '   ');
     INSERT INTO numbers VALUES (11.1, 0.3, 90, 'a');
     INSERT INTO numbers VALUES (12.9, 0.31, 86, '');
-    """
-    )
+    """)
 
     expected = {
         "count": [8, 8, 8, 8],
@@ -494,13 +471,11 @@ def test_table_schema_profile(ip, tmp_empty, arguments):
     ip.run_cell("%sql INSERT INTO t VALUES (33)")
     ip.run_cell("%sql --close sqlite:///b.db")
 
-    ip.run_cell(
-        """
+    ip.run_cell("""
     %%sql sqlite://
     ATTACH DATABASE 'a.db' AS a_schema;
     ATTACH DATABASE 'b.db' AS b_schema;
-    """
-    )
+    """)
 
     expected = {
         "count": ["3"],
@@ -545,13 +520,11 @@ def test_table_schema_profile_with_substitution(ip, tmp_empty, arguments):
     ip.run_cell("%sql INSERT INTO t VALUES (33)")
     ip.run_cell("%sql --close sqlite:///b.db")
 
-    ip.run_cell(
-        """
+    ip.run_cell("""
     %%sql sqlite://
     ATTACH DATABASE 'a.db' AS a_schema;
     ATTACH DATABASE 'b.db' AS b_schema;
-    """
-    )
+    """)
 
     expected = {
         "count": ["3"],
@@ -587,21 +560,17 @@ def test_sqlcmd_profile_with_schema_argument_and_dbapi(ip_empty, tmp_empty, argu
     sqlite_dbapi_testdb_conn = sqlite3.connect("test.db")
     ip_empty.push({"sqlite_dbapi_testdb_conn": sqlite_dbapi_testdb_conn})
 
-    ip_empty.run_cell(
-        """%%sql sqlite_dbapi_testdb_conn
+    ip_empty.run_cell("""%%sql sqlite_dbapi_testdb_conn
 CREATE TABLE sample_table (n FLOAT);
 INSERT INTO sample_table VALUES (11);
 INSERT INTO sample_table VALUES (22);
 INSERT INTO sample_table VALUES (33);
-"""
-    )
+""")
 
-    ip_empty.run_cell(
-        """
+    ip_empty.run_cell("""
     %%sql sqlite_dbapi_testdb_conn
     ATTACH DATABASE 'test.db' AS test_schema;
-    """
-    )
+    """)
 
     expected = {
         "count": ["3"],
@@ -635,14 +604,12 @@ INSERT INTO sample_table VALUES (33);
     ],
 )
 def test_table_profile_warnings_styles(ip_with_connections, tmp_empty, conn):
-    ip_with_connections.run_cell(
-        f"""
+    ip_with_connections.run_cell(f"""
     %%sql {conn}
     CREATE TABLE numbers (rating float,price varchar(50),number int,word varchar(50));
     INSERT INTO numbers VALUES (14.44, '2.48', 82, 'a');
     INSERT INTO numbers VALUES (13.13, '1.50', 93, 'b');
-    """
-    )
+    """)
     out = ip_with_connections.run_cell("%sqlcmd profile -t numbers").result
     stats_table_html = out._table_html
     assert "Columns <code>price</code> have a datatype mismatch" in stats_table_html
@@ -669,15 +636,13 @@ def test_profile_is_numeric():
     ],
 )
 def test_table_profile_is_numeric(ip_with_connections, tmp_empty, conn):
-    ip_with_connections.run_cell(
-        f"""
+    ip_with_connections.run_cell(f"""
         %%sql {conn}
         CREATE TABLE people (name varchar(50),age varchar(50),number int,
             country varchar(50),gender_1 varchar(50), gender_2 varchar(50));
         INSERT INTO people VALUES ('joe', '48', 82, 'usa', '0', 'male');
         INSERT INTO people VALUES ('paula', '50', 93, 'uk', '1', 'female');
-        """
-    )
+        """)
     out = ip_with_connections.run_cell("%sqlcmd profile -t people").result
     stats_table_html = out._table_html
     assert "td:nth-child(3)" in stats_table_html
@@ -698,16 +663,14 @@ def test_table_profile_is_numeric(ip_with_connections, tmp_empty, conn):
     ],
 )
 def test_table_profile_store(ip_with_connections, tmp_empty, conn, report_fname):
-    ip_with_connections.run_cell(
-        f"""
+    ip_with_connections.run_cell(f"""
     %%sql {conn}
     CREATE TABLE test_store (rating, price, number, symbol);
     INSERT INTO test_store VALUES (14.44, 2.48, 82, 'a');
     INSERT INTO test_store VALUES (13.13, 1.50, 93, 'b');
     INSERT INTO test_store VALUES (12.59, 0.20, 98, 'a');
     INSERT INTO test_store VALUES (11.54, 0.41, 89, 'a');
-    """
-    )
+    """)
 
     ip_with_connections.run_cell(
         f"%sqlcmd profile -t test_store --output {report_fname}"
@@ -727,16 +690,14 @@ def test_table_profile_store(ip_with_connections, tmp_empty, conn, report_fname)
 def test_table_profile_store_with_substitution(
     ip_with_connections, tmp_empty, conn, report_fname
 ):
-    ip_with_connections.run_cell(
-        f"""
+    ip_with_connections.run_cell(f"""
     %%sql {conn}
     CREATE TABLE test_store (rating, price, number, symbol);
     INSERT INTO test_store VALUES (14.44, 2.48, 82, 'a');
     INSERT INTO test_store VALUES (13.13, 1.50, 93, 'b');
     INSERT INTO test_store VALUES (12.59, 0.20, 98, 'a');
     INSERT INTO test_store VALUES (11.54, 0.41, 89, 'a');
-    """
-    )
+    """)
     ip_with_connections.user_global_ns["table"] = "test_store"
     ip_with_connections.user_global_ns["output"] = report_fname
 
@@ -769,16 +730,14 @@ def test_table_profile_store_with_substitution(
     ],
 )
 def test_test_error(ip, cell, error_message):
-    ip.run_cell(
-        """
+    ip.run_cell("""
     %%sql sqlite://
     CREATE TABLE test_numbers (value);
     INSERT INTO test_numbers VALUES (14);
     INSERT INTO test_numbers VALUES (13);
     INSERT INTO test_numbers VALUES (12);
     INSERT INTO test_numbers VALUES (11);
-    """
-    )
+    """)
 
     with pytest.raises(UsageError) as excinfo:
         ip.run_cell(cell)
@@ -984,15 +943,13 @@ def test_force_delete_all_with_variable_substitution(ip_snippets):
 
 @pytest.mark.parametrize("arg", ["--delete-force-all", "-A"])
 def test_force_delete_all_child_query(ip_snippets, arg):
-    ip_snippets.run_cell(
-        """
+    ip_snippets.run_cell("""
 %%sql --save high_price_b_child --no-execute
 SELECT *
 FROM "high_price_b"
 WHERE symbol == 'b'
 LIMIT 3
-"""
-    )
+""")
     out = ip_snippets.run_cell(f"%sqlcmd snippets {arg} high_price_b").result
     assert "high_price_b_child, high_price_b has been deleted" in out
     stored_snippets = out[out.find("Stored snippets") + len("Stored snippets: ") :]
@@ -1049,11 +1006,9 @@ def test_delete_snippet_when_dependency_force_deleted(ip_snippets, arg):
 
 def test_view_snippet_variable_substitution(ip_snippets):
     ip_snippets.user_global_ns["snippet_name"] = "test_snippet"
-    ip_snippets.run_cell(
-        """%%sql --save {{snippet_name}} --no-execute
+    ip_snippets.run_cell("""%%sql --save {{snippet_name}} --no-execute
 SELECT * FROM "test_store" WHERE price >= 1.50
-"""
-    )
+""")
 
     out = ip_snippets.run_cell("%sqlcmd snippets {{snippet_name}}").result
     assert 'SELECT * FROM "test_store" WHERE price >= 1.50' in out

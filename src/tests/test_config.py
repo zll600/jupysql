@@ -61,12 +61,10 @@ def test_no_error_if_connection_file_doesnt_exist(tmp_empty, ip_no_magics):
 def test_no_error_if_connection_file_doesnt_have_default_section(
     tmp_empty, ip_no_magics
 ):
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [duck]
 drivername = sqlite
-"""
-    )
+""")
 
     ip_no_magics.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
 
@@ -76,12 +74,10 @@ drivername = sqlite
 
 
 def test_start_ini_default_connection_if_any(tmp_empty, ip_no_magics):
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [default]
 drivername = sqlite
-"""
-    )
+""")
 
     ip_no_magics.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
 
@@ -92,13 +88,11 @@ drivername = sqlite
 
 
 def test_config_loads_query_element_as_url_params(tmp_empty, ip_no_magics):
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [default]
 drivername = sqlite
 query = {'param1': 'value1', 'param2': 'value2'}
-"""
-    )
+""")
     ip_no_magics.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
 
     load_ipython_extension(ip_no_magics)
@@ -116,14 +110,12 @@ def test_load_home_toml_if_no_pyproject_toml(
     )
     home_toml = Path("~/.jupysql/config").expanduser()
     home_toml.parent.mkdir(exist_ok=True)
-    home_toml.write_text(
-        """
+    home_toml.write_text("""
 [tool.jupysql.SqlMagic]
 autocommit = false
 autolimit = 1
 style = "RANDOM"
-"""
-    )
+""")
 
     expect = [
         "Settings changed:",
@@ -153,20 +145,16 @@ def test_load_home_toml_if_sqlmagic_section_not_in_pyproject_toml(
     )
     home_toml = Path("~/.jupysql/config").expanduser()
     home_toml.parent.mkdir(exist_ok=True)
-    home_toml.write_text(
-        """
+    home_toml.write_text("""
 [tool.jupysql.SqlMagic]
 autocommit = false
 autolimit = 1
 style = "RANDOM"
-"""
-    )
+""")
 
-    Path("pyproject.toml").write_text(
-        """
+    Path("pyproject.toml").write_text("""
 [tool.jupysql]
-"""
-    )
+""")
 
     expect = [
         "Settings changed:",
@@ -189,19 +177,15 @@ style = "RANDOM"
 
 
 def test_start_ini_default_connection_using_toml_if_any(tmp_empty, ip_no_magics):
-    Path("pyproject.toml").write_text(
-        """
+    Path("pyproject.toml").write_text("""
 [tool.jupysql.SqlMagic]
 dsn_filename = 'myconnections.ini'
-"""
-    )
+""")
 
-    Path("myconnections.ini").write_text(
-        """
+    Path("myconnections.ini").write_text("""
 [default]
 drivername = duckdb
-"""
-    )
+""")
 
     load_ipython_extension(ip_no_magics)
 
@@ -214,12 +198,10 @@ def test_magic_initialization_when_default_connection_fails(
 ):
     ip_no_magics.run_cell("%config SqlMagic.dsn_filename = 'connections.ini'")
 
-    Path("connections.ini").write_text(
-        """
+    Path("connections.ini").write_text("""
 [default]
 drivername = someunknowndriver
-"""
-    )
+""")
 
     load_ipython_extension(ip_no_magics)
 
@@ -234,12 +216,10 @@ def test_magic_initialization_with_no_toml(tmp_empty, ip_no_magics):
 def test_magic_initialization_with_corrupted_pyproject_toml(
     tmp_empty, ip_no_magics, capsys
 ):
-    Path("pyproject.toml").write_text(
-        """
+    Path("pyproject.toml").write_text("""
 [tool.jupysql.SqlMagic]
 dsn_filename = myconnections.ini
-"""
-    )
+""")
 
     load_ipython_extension(ip_no_magics)
 
@@ -255,12 +235,10 @@ def test_magic_initialization_with_corrupted_home_toml(
     )
     home_toml = Path("~/.jupysql/config").expanduser()
     home_toml.parent.mkdir(exist_ok=True)
-    home_toml.write_text(
-        """
+    home_toml.write_text("""
 [tool.jupysql.SqlMagic]
 dsn_filename = myconnections.ini
-"""
-    )
+""")
 
     load_ipython_extension(ip_no_magics)
 
@@ -271,14 +249,12 @@ dsn_filename = myconnections.ini
 def test_loading_valid_pyproject_toml_shows_feedback_and_modifies_config(
     tmp_empty, ip_no_magics, capsys
 ):
-    Path("pyproject.toml").write_text(
-        """
+    Path("pyproject.toml").write_text("""
 [tool.jupysql.SqlMagic]
 autocommit = false
 autolimit = 1
 style = "RANDOM"
-"""
-    )
+""")
 
     expect = [
         "Loading configurations from {path}",
@@ -312,14 +288,12 @@ def test_loading_valid_home_toml_shows_feedback_and_modifies_config(
     )
     home_toml = Path("~/.jupysql/config").expanduser()
     home_toml.parent.mkdir(exist_ok=True)
-    home_toml.write_text(
-        """
+    home_toml.write_text("""
 [tool.jupysql.SqlMagic]
 autocommit = false
 autolimit = 1
 style = "RANDOM"
-"""
-    )
+""")
 
     expect = [
         "Loading configurations from {path}",
@@ -387,24 +361,18 @@ def test_loading_toml_display_configuration_docs_link(
 @pytest.mark.parametrize(
     "file_content",
     [
-        (
-            """
+        ("""
 [test]
 github = "ploomber/jupysql"
-"""
-        ),
-        (
-            """
+"""),
+        ("""
 [tool.pkgmt]
 github = "ploomber/jupysql"
-"""
-        ),
-        (
-            """
+"""),
+        ("""
 [tool.jupysql.test]
 github = "ploomber/jupysql"
-"""
-        ),
+"""),
     ],
 )
 def test_load_toml_user_configurations_not_specified(
@@ -478,16 +446,14 @@ def test_error_on_toml_parsing(
 
 
 def test_valid_and_invalid_configs(tmp_empty, ip_no_magics, capsys):
-    Path("pyproject.toml").write_text(
-        """
+    Path("pyproject.toml").write_text("""
 [tool.jupysql.SqlMagic]
 autocomm = true
 autop = false
 autolimit = "text"
 invalid = false
 displaycon = false
-"""
-    )
+""")
     toml_path = str(Path(os.getcwd()).joinpath("pyproject.toml"))
     os.makedirs("sub")
     os.chdir("sub")
@@ -517,12 +483,10 @@ displaycon = false
 
 def test_toml_optional_message(tmp_empty, monkeypatch, ip, capsys):
     monkeypatch.setitem(sys.modules, "toml", None)
-    Path("pyproject.toml").write_text(
-        """
+    Path("pyproject.toml").write_text("""
 [tool.jupysql.SqlMagic]
 autocommit = true
-"""
-    )
+""")
 
     ip.run_cell("%load_ext sql")
     out, _ = capsys.readouterr()

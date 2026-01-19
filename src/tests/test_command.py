@@ -75,12 +75,10 @@ def test_parsed(
     ip.run_cell("%config SqlMagic.dsn_filename = 'odbc.ini'")
 
     # needed for the last test case
-    Path("odbc.ini").write_text(
-        """
+    Path("odbc.ini").write_text("""
 [db]
 drivername = sqlite
-"""
-    )
+""")
 
     cmd = SQLCommand(sql_magic, ip.user_ns, line, cell)
 
