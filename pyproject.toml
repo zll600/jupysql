@@ -27,6 +27,8 @@ flake8 = [
     # W503, W504 ignore line break after/before 
     # binary operator since they are conflicting 
     "--ignore=F821, W503, W504",
+    # workround for the E501: line too long error
+    "--max-line-length=100",
 ]
 
 [tool.codespell]
