@@ -13,38 +13,31 @@ plot_str = util.pretty_print(SUPPORTED_PLOTS, last_delimiter="or")
 
 @pytest.fixture
 def ip_snippets(ip, tmp_empty):
-    Path("data.csv").write_text(
-        """\
+    Path("data.csv").write_text("""\
 x, y
 0, 0
 1, 1
 2, 2
-"""
-    )
+""")
     ip.run_cell("%sql duckdb://")
 
-    ip.run_cell(
-        """%%sql --save subset --no-execute
+    ip.run_cell("""%%sql --save subset --no-execute
 SELECT *
 FROM data.csv
 WHERE x > -1
-"""
-    )
-    ip.run_cell(
-        """%%sql --save subset_another --no-execute
+""")
+    ip.run_cell("""%%sql --save subset_another --no-execute
 SELECT *
 FROM subset
 WHERE x > 2
-"""
-    )
+""")
     yield ip
 
 
 @pytest.fixture
 def ip_with_schema_and_table(ip_empty, load_penguin):
     ip_empty.run_cell("%sql duckdb://")
-    ip_empty.run_cell(
-        """%%sql
+    ip_empty.run_cell("""%%sql
 CREATE SCHEMA sqlalchemy_schema;
 CREATE TABLE sqlalchemy_schema.penguins1 (
     species VARCHAR(255),
@@ -57,14 +50,12 @@ CREATE TABLE sqlalchemy_schema.penguins1 (
 );
 
 COPY sqlalchemy_schema.penguins1 FROM 'penguins.csv' WITH (FORMAT CSV, HEADER TRUE);
-"""
-    )
+""")
 
     conn = duckdb.connect(database=":memory:", read_only=False)
     ip_empty.push({"conn": conn})
     ip_empty.run_cell("%sql conn")
-    ip_empty.run_cell(
-        """%%sql
+    ip_empty.run_cell("""%%sql
 CREATE SCHEMA dbapi_schema;
 CREATE TABLE dbapi_schema.penguins2 (
     species VARCHAR(255),
@@ -77,8 +68,7 @@ CREATE TABLE dbapi_schema.penguins2 (
 );
 
 COPY dbapi_schema.penguins2 FROM 'penguins.csv' WITH (FORMAT CSV, HEADER TRUE);
-"""
-    )
+""")
 
     yield ip_empty
 
@@ -318,50 +308,40 @@ def test_sqlplot(tmp_empty, ip, cell):
     # clean current Axes
     plt.cla()
 
-    Path("spaces.csv").write_text(
-        """\
+    Path("spaces.csv").write_text("""\
 "some column", y
 0, 0
 1, 1
 2, 2
-"""
-    )
+""")
 
-    Path("data.csv").write_text(
-        """\
+    Path("data.csv").write_text("""\
 x, y
 0, 0
 1, 1
 2, 2
-"""
-    )
+""")
 
-    Path("nas.csv").write_text(
-        """\
+    Path("nas.csv").write_text("""\
 x, y
 , 0
 1, 1
 2, 2
-"""
-    )
+""")
 
-    Path("file with spaces.csv").write_text(
-        """\
+    Path("file with spaces.csv").write_text("""\
 x, y
 0, 0
 1, 1
 2, 2
-"""
-    )
+""")
     ip.run_cell("%sql duckdb://")
 
-    ip.run_cell(
-        """%%sql --save subset --no-execute
+    ip.run_cell("""%%sql --save subset --no-execute
 SELECT *
 FROM data.csv
 WHERE x > -1
-"""
-    )
+""")
 
     out = ip.run_cell(cell)
 
@@ -373,14 +353,12 @@ WHERE x > -1
 @pytest.fixture
 def load_data_two_col(ip):
     if not Path("data_two.csv").is_file():
-        Path("data_two.csv").write_text(
-            """\
+        Path("data_two.csv").write_text("""\
 x, y
 0, 0
 1, 1
 2, 2
-5, 7"""
-        )
+5, 7""")
 
     ip.run_cell("%sql duckdb://")
 
@@ -388,8 +366,7 @@ x, y
 @pytest.fixture
 def load_data_one_col(ip):
     if not Path("data_one.csv").is_file():
-        Path("data_one.csv").write_text(
-            """\
+        Path("data_one.csv").write_text("""\
 x
 0
 0
@@ -397,16 +374,14 @@ x
 1
 1
 2
-"""
-        )
+""")
     ip.run_cell("%sql duckdb://")
 
 
 @pytest.fixture
 def load_data_one_col_null(ip):
     if not Path("data_one_null.csv").is_file():
-        Path("data_one_null.csv").write_text(
-            """\
+        Path("data_one_null.csv").write_text("""\
 x
 
 0
@@ -417,8 +392,7 @@ x
 1
 1
 2
-"""
-        )
+""")
     ip.run_cell("%sql duckdb://")
 
 
@@ -941,50 +915,40 @@ def test_sqlplot_with_variable_substitution(tmp_empty, ip, cell):
     ip.user_global_ns["orient"] = "h"
     plt.cla()
 
-    Path("spaces.csv").write_text(
-        """\
+    Path("spaces.csv").write_text("""\
 "some column", y
 0, 0
 1, 1
 2, 2
-"""
-    )
+""")
 
-    Path("data.csv").write_text(
-        """\
+    Path("data.csv").write_text("""\
 x, y
 0, 0
 1, 1
 2, 2
-"""
-    )
+""")
 
-    Path("nas.csv").write_text(
-        """\
+    Path("nas.csv").write_text("""\
 x, y
 , 0
 1, 1
 2, 2
-"""
-    )
+""")
 
-    Path("file with spaces.csv").write_text(
-        """\
+    Path("file with spaces.csv").write_text("""\
 x, y
 0, 0
 1, 1
 2, 2
-"""
-    )
+""")
     ip.run_cell("%sql duckdb://")
 
-    ip.run_cell(
-        """%%sql --save subset --no-execute
+    ip.run_cell("""%%sql --save subset --no-execute
 SELECT *
 FROM data.csv
 WHERE x > -1
-"""
-    )
+""")
 
     out = ip.run_cell(cell)
 

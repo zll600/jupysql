@@ -141,8 +141,7 @@ def sql_magic():
 
 
 def insert_sample_data(ip):
-    ip.run_cell(
-        """%%sql
+    ip.run_cell("""%%sql
 CREATE TABLE test (n INT, name TEXT);
 INSERT INTO test VALUES (1, 'foo');
 INSERT INTO test VALUES (2, 'bar');
@@ -168,8 +167,7 @@ INSERT INTO number_table VALUES ((-2), (-3));
 INSERT INTO number_table VALUES ((-4), 2);
 INSERT INTO number_table VALUES (2, (-5));
 INSERT INTO number_table VALUES (4, 3);
-"""
-    )
+""")
 
 
 @pytest.fixture

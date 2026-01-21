@@ -1,6 +1,5 @@
 import shutil
 
-
 _CONDA_INSTALLED = shutil.which("conda") is not None
 _PREFER_CONDA = {"psycopg2"}
 

@@ -228,18 +228,14 @@ def test_duckdb_autocommit_on_with_manual_commit(tmp_empty, monkeypatch):
     conn_mock_commit = Mock(wraps=conn._connection.commit)
     monkeypatch.setattr(conn._connection, "commit", conn_mock_commit)
 
-    conn.raw_execute(
-        """
+    conn.raw_execute("""
 CREATE TABLE numbers (
     x INTEGER
 );
-"""
-    )
-    conn.raw_execute(
-        """
+""")
+    conn.raw_execute("""
     INSERT INTO numbers VALUES (1), (2), (3);
-    """
-    )
+    """)
 
     # if commit is working, the table should be readable from another connection
     another = SQLAlchemyConnection(
@@ -273,18 +269,14 @@ def test_postgres_autocommit_on_with_manual_commit(setup_postgreSQL, monkeypatch
     conn_mock_commit = Mock(wraps=conn._connection.commit)
     monkeypatch.setattr(conn._connection, "commit", conn_mock_commit)
 
-    conn.raw_execute(
-        """
+    conn.raw_execute("""
 CREATE TABLE numbers (
     x INTEGER
 );
-"""
-    )
-    conn.raw_execute(
-        """
+""")
+    conn.raw_execute("""
     INSERT INTO numbers VALUES (1), (2), (3);
-    """
-    )
+    """)
 
     # if commit is working, the table should be readable from another connection
     another = SQLAlchemyConnection(engine=create_engine(url), config=Config)
@@ -306,18 +298,14 @@ def test_duckdb_autocommit_off(tmp_empty):
 
     engine = create_engine("duckdb:///my.db")
     conn = SQLAlchemyConnection(engine=engine, config=Config)
-    conn.raw_execute(
-        """
+    conn.raw_execute("""
 CREATE TABLE numbers (
     x INTEGER
 );
-"""
-    )
-    conn.raw_execute(
-        """
+""")
+    conn.raw_execute("""
     INSERT INTO numbers VALUES (1), (2), (3);
-    """
-    )
+    """)
 
     # since autocommit is off, the table should not be readable from another connection
     another = SQLAlchemyConnection(

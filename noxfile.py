@@ -3,7 +3,6 @@ from os import environ
 
 import nox
 
-
 # list non-setup sessions here
 nox.options.sessions = ["test_postgres"]
 

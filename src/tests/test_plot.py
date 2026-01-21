@@ -90,16 +90,14 @@ def test_boxplot_stats_exception(chinook_db, ip_empty):
 
 
 def test_summary_stats(chinook_db, ip_empty, tmp_empty):
-    Path("data.csv").write_text(
-        """\
+    Path("data.csv").write_text("""\
 x, y
 0, 0
 1, 1
 2, 2
 5, 7
 9, 9
-"""
-    )
+""")
 
     # there's some weird behavior in duckdb-engine that will cause the
     # table not to be found if we call commit
@@ -132,12 +130,10 @@ def test_internal_histogram_with_nulls(tmp_empty, ip):
         "name,age\nDan,33\nBob,19\nSheri,\nVin,33\nMick,\nJay,33\nSky,33"
     )
     ip.run_cell("%sql duckdb://")
-    ip.run_cell(
-        """%%sql --save test_dataset --no-execute
+    ip.run_cell("""%%sql --save test_dataset --no-execute
 SELECT *
 FROM data.csv
-"""
-    )
+""")
     out = ip.run_cell("%sqlplot histogram --table data.csv --column age")
     assert isinstance(out.result, matplotlib.axes._axes.Axes)
 
@@ -147,11 +143,9 @@ def test_internal_histogram_no_nulls(tmp_empty, ip):
         "name,age\nDan,33\nBob,19\nSheri,45\nVin,33\nMick,38\nJay,33\nSky,33"
     )
     ip.run_cell("%sql duckdb://")
-    ip.run_cell(
-        """%%sql --save test_dataset --no-execute
+    ip.run_cell("""%%sql --save test_dataset --no-execute
 SELECT *
 FROM data.csv
-"""
-    )
+""")
     out = ip.run_cell("%sqlplot histogram --table data.csv --column age")
     assert isinstance(out.result, matplotlib.axes._axes.Axes)

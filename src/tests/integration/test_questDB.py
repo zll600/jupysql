@@ -136,15 +136,13 @@ def ip_questdb(diamonds_data, penguins_data, ip_empty):
     Initializes questdb database container and loads it with data
     """
     with questdb_container():
-        ip_empty.run_cell(
-            f"""
+        ip_empty.run_cell(f"""
         import psycopg2 as pg
         engine = pg.connect(
             "{QUESTDB_CONNECTION_STRING}"
         )
         %sql engine
-        """
-        )
+        """)
 
         # Load pre-defined datasets
         import_data(penguins_data, "penguins.csv")
@@ -154,15 +152,13 @@ def ip_questdb(diamonds_data, penguins_data, ip_empty):
 
 @pytest.fixture
 def penguins_no_nulls_questdb(ip_questdb):
-    ip_questdb.run_cell(
-        """
+    ip_questdb.run_cell("""
 %%sql --save no_nulls --no-execute
 SELECT *
 FROM penguins.csv
 WHERE body_mass_g IS NOT NULL and
 sex IS NOT NULL
-    """
-    ).result
+    """).result
 
 
 # ggplot and %sqlplot

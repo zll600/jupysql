@@ -8,28 +8,22 @@ from IPython.core.error import UsageError
 
 @pytest.fixture
 def short_trips_data(ip, yellow_trip_data):
-    ip.run_cell(
-        """
+    ip.run_cell("""
         %sql duckdb://
-        """
-    )
+        """)
 
-    ip.run_cell(
-        f"""
+    ip.run_cell(f"""
         %%sql --save short_trips --no-execute
         select * from "{yellow_trip_data}"
         WHERE trip_distance < 6.3
-        """
-    ).result
+        """).result
 
 
 @pytest.fixture
 def yellow_trip_data(ip, tmpdir):
-    ip.run_cell(
-        """
+    ip.run_cell("""
     %sql duckdb://
-    """
-    )
+    """)
 
     file_path_str = str(tmpdir.join("yellow_tripdata_2021-01.parquet"))
 
@@ -45,11 +39,9 @@ def yellow_trip_data(ip, tmpdir):
 
 @pytest.fixture
 def diamonds_data(ip, tmpdir):
-    ip.run_cell(
-        """
+    ip.run_cell("""
         %sql duckdb://
-        """
-    )
+        """)
 
     file_path_str = str(tmpdir.join("diamonds.csv"))
 
@@ -66,11 +58,9 @@ def diamonds_data(ip, tmpdir):
 def penguins_data(ip, tmpdir):
     file_path_str = str(tmpdir.join("penguins.csv"))
 
-    ip.run_cell(
-        """
+    ip.run_cell("""
         %sql duckdb://
-        """
-    )
+        """)
 
     if not Path(file_path_str).is_file():
         urlretrieve(
@@ -96,21 +86,17 @@ def nulls_data(ip, tmpdir):
 
 @pytest.fixture
 def penguins_no_nulls(ip, penguins_data):
-    ip.run_cell(
-        """
+    ip.run_cell("""
         %sql duckdb://
-        """
-    )
+        """)
 
-    ip.run_cell(
-        f"""
+    ip.run_cell(f"""
 %%sql --save no_nulls --no-execute
 SELECT *
 FROM "{penguins_data}"
 WHERE body_mass_g IS NOT NULL and
 sex IS NOT NULL
-    """
-    ).result
+    """).result
 
 
 @_cleanup_cm()

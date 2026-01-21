@@ -10,7 +10,6 @@ from prettytable import PrettyTable
 
 from sql import inspect, connection
 
-
 EXPECTED_SUGGESTIONS_MESSAGE = "Did you mean:"
 EXPECTED_NO_TABLE_IN_SCHEMA = "There is no table with name {0!r} in schema {1!r}"
 EXPECTED_NO_TABLE_IN_DEFAULT_SCHEMA = (
@@ -162,17 +161,13 @@ def test_nonexistent_table(sample_db, name, schema, error):
 
 
 def test_get_schema_names(ip):
-    ip.run_cell(
-        """%%sql sqlite:///my.db
+    ip.run_cell("""%%sql sqlite:///my.db
 CREATE TABLE IF NOT EXISTS test_table (id INT)
-"""
-    )
+""")
 
-    ip.run_cell(
-        """%%sql
+    ip.run_cell("""%%sql
 ATTACH DATABASE 'my.db' AS test_schema
-"""
-    )
+""")
 
     expected_schema_names = ["main", "test_schema"]
     schema_names = inspect.get_schema_names()
@@ -267,23 +262,17 @@ def test_columns_with_missing_values(
 
     monkeypatch.setattr(inspect, "_get_inspector", lambda _: mock)
 
-    ip.run_cell(
-        """%%sql sqlite:///another.db
+    ip.run_cell("""%%sql sqlite:///another.db
 CREATE TABLE IF NOT EXISTS another_table (id INT)
-"""
-    )
+""")
 
-    ip.run_cell(
-        """%%sql sqlite:///my.db
+    ip.run_cell("""%%sql sqlite:///my.db
 CREATE TABLE IF NOT EXISTS test_table (id INT)
-"""
-    )
+""")
 
-    ip.run_cell(
-        """%%sql
+    ip.run_cell("""%%sql
 ATTACH DATABASE 'another.db' as 'another_schema';
-"""
-    )
+""")
 
     pt = PrettyTable(field_names=field_names)
     pt.add_rows(rows)
@@ -415,14 +404,12 @@ def test_is_table_exists(ip, table, expected_error, error_type):
 def test_is_table_exists_with(ip, table, expected_error, expected_suggestions):
     with_ = ["temp"]
 
-    ip.run_cell(
-        f"""
+    ip.run_cell(f"""
         %%sql --save {with_[0]} --no-execute
         SELECT *
         FROM {table}
         WHERE x > 2
-        """
-    )
+        """)
     if expected_error:
         with pytest.raises(expected_error) as error:
             inspect.is_table_exists(table)
@@ -524,17 +511,13 @@ def test_bad_table_error_message_with_schema(ip, query, suggestions, table, sche
 
     expected_error_message = EXPECTED_NO_TABLE_IN_SCHEMA.format(table, schema)
 
-    ip.run_cell(
-        """%%sql sqlite:///my.db
+    ip.run_cell("""%%sql sqlite:///my.db
 CREATE TABLE IF NOT EXISTS test_table (id INT)
-"""
-    )
+""")
 
-    ip.run_cell(
-        """%%sql
+    ip.run_cell("""%%sql
 ATTACH DATABASE 'my.db' AS test_schema
-"""
-    )
+""")
 
     with pytest.raises(UsageError) as excinfo:
         ip.run_cell(query)
