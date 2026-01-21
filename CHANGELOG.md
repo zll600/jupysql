@@ -2,6 +2,8 @@
 
 ## 0.11.2dev
 
+* [Feature] Support Python 3.12/3.13/3.14
+
 ## 0.11.1 (2025-03-25)
 
 * [Fix] No longer showing the Slack link in error messages
