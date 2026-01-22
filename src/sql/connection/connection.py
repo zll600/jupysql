@@ -1291,7 +1291,12 @@ def detect_duckdb_summarize_or_select(query):
     Note:
     Assumes there is only one SQL statement in the query.
     """
-    statements = sqlparse.parse(query)
+    try:
+        statements = sqlparse.parse(query)
+    except Exception:
+        # Handle the sql parse error
+        return False
+
     if statements:
         if len(statements) > 1:
             raise NotImplementedError("Multiple statements are not supported")
