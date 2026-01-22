@@ -4,7 +4,7 @@ conda init bash
 
 # Perform install instructions from
 # https://ploomber-contributing.readthedocs.io/en/latest/contributing/setup.html
-conda create --name ploomber-base python=3.10 --yes
+conda create --name ploomber-base python=3.11 --yes
 conda activate ploomber-base
 pip install pkgmt
 pkgmt setup --doc

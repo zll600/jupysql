@@ -1138,9 +1138,7 @@ class SparkConnectConnection(AbstractConnection):
         mode = (
             "overwrite"
             if if_exists == "replace"
-            else "append"
-            if if_exists == "append"
-            else "error"
+            else "append" if if_exists == "append" else "error"
         )
         self._connection.createDataFrame(data_frame).write.mode(mode).saveAsTable(
             f"{schema}.{table_name}" if schema else table_name
@@ -1293,7 +1291,12 @@ def detect_duckdb_summarize_or_select(query):
     Note:
     Assumes there is only one SQL statement in the query.
     """
-    statements = sqlparse.parse(query)
+    try:
+        statements = sqlparse.parse(query)
+    except Exception:
+        # Handle the sql parse error
+        return False
+
     if statements:
         if len(statements) > 1:
             raise NotImplementedError("Multiple statements are not supported")

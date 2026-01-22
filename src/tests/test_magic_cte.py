@@ -4,19 +4,15 @@ from sql.error_handler import CTE_MSG
 
 
 def test_trailing_semicolons_removed_from_cte(ip):
-    ip.run_cell(
-        """%%sql --save positive_x
+    ip.run_cell("""%%sql --save positive_x
 SELECT * FROM number_table WHERE x > 0;
 
 
-"""
-    )
+""")
 
-    ip.run_cell(
-        """%%sql --save positive_y
+    ip.run_cell("""%%sql --save positive_y
 SELECT * FROM number_table WHERE y > 0;
-"""
-    )
+""")
 
     cell_execution = ip.run_cell(
         """%%sql --save final --with positive_x --with positive_y
@@ -90,8 +86,7 @@ def test_table_name_typo(ip):
 
 
 def test_snippets_delete(ip, capsys):
-    ip.run_cell(
-        """
+    ip.run_cell("""
     %%sql sqlite://
     CREATE TABLE orders (order_id int, customer_id int, order_value float);
     INSERT INTO orders VALUES (123, 15, 150.67);
@@ -106,8 +101,7 @@ def test_snippets_delete(ip, capsys):
     INSERT INTO customers VALUES (25, 'Sheryl');
     INSERT INTO customers VALUES (5, 'Mike');
     INSERT INTO customers VALUES (30, 'Daisy');
-    """
-    )
+    """)
     ip.run_cell_magic(
         "sql",
         "--save orders_less",
@@ -185,18 +179,14 @@ def test_query_syntax_error(ip):
 
 
 def test_comment_in_query_stripped(ip):
-    ip.run_cell(
-        """%%sql --save positive_x
+    ip.run_cell("""%%sql --save positive_x
 SELECT * FROM number_table WHERE x > 0;
 --some comment
 
-"""
-    )
-    ip.run_cell(
-        """%%sql --with positive_x --save final
+""")
+    ip.run_cell("""%%sql --with positive_x --save final
 SELECT * FROM positive_x
-"""
-    )
+""")
     cell_final_query = ip.run_cell("%sqlcmd snippets final").result
     assert (
         cell_final_query == "WITH `positive_x` AS (\nSELECT * FROM number_table WHERE "
@@ -205,17 +195,13 @@ SELECT * FROM positive_x
 
 
 def test_inline_comment_in_query_stripped(ip):
-    ip.run_cell(
-        """%%sql --save positive_x
+    ip.run_cell("""%%sql --save positive_x
 SELECT * FROM number_table
 WHERE x > 0; --some comment
-"""
-    )
-    ip.run_cell(
-        """%%sql --with positive_x --save final
+""")
+    ip.run_cell("""%%sql --with positive_x --save final
 SELECT * FROM positive_x
-"""
-    )
+""")
     cell_final_query = ip.run_cell("%sqlcmd snippets final").result
     assert (
         cell_final_query == "WITH `positive_x` AS (\nSELECT * FROM "
@@ -224,30 +210,24 @@ SELECT * FROM positive_x
 
 
 def test_comments_in_multiple_with_query_stripped(ip):
-    ip.run_cell(
-        """%%sql --save positive_x
+    ip.run_cell("""%%sql --save positive_x
 /* select all
 numbers */
 SELECT * FROM number_table WHERE x > 0;
 --some comment
 
-"""
-    )
-    ip.run_cell(
-        """%%sql --save positive_x_another
+""")
+    ip.run_cell("""%%sql --save positive_x_another
 /* select all
 numbers again */
 SELECT * FROM number_table WHERE x > 0;
 --some comment
 
-"""
-    )
-    ip.run_cell(
-        """%%sql --with positive_x --with positive_x_another --save final
+""")
+    ip.run_cell("""%%sql --with positive_x --with positive_x_another --save final
 SELECT * FROM positive_x, positive_x_another
 WHERE positive_x.x = positive_x_another.x
-"""
-    )
+""")
     cell_final_query = ip.run_cell("%sqlcmd snippets final").result
     assert (
         cell_final_query
@@ -259,21 +239,17 @@ WHERE positive_x.x = positive_x_another.x
 
 
 def test_multiple_comments_in_query_stripped(ip):
-    ip.run_cell(
-        """%%sql --save positive_x
+    ip.run_cell("""%%sql --save positive_x
 --select all rows
 SELECT * FROM number_table
 --if x > 0
 WHERE x > 0;
 --final comment
 
-"""
-    )
-    ip.run_cell(
-        """%%sql --with positive_x --save final
+""")
+    ip.run_cell("""%%sql --with positive_x --save final
 SELECT * FROM positive_x
-"""
-    )
+""")
     cell_final_query = ip.run_cell("%sqlcmd snippets final").result
     assert (
         cell_final_query == "WITH `positive_x` AS (\n\nSELECT * FROM number_table\n\n"
@@ -282,8 +258,7 @@ SELECT * FROM positive_x
 
 
 def test_single_and_multiline_comments_in_query_stripped(ip):
-    ip.run_cell(
-        """%%sql --save positive_x
+    ip.run_cell("""%%sql --save positive_x
 /* select all
 rows*/
 SELECT * FROM number_table
@@ -291,13 +266,10 @@ SELECT * FROM number_table
 WHERE x > 0;
 --final comment
 
-"""
-    )
-    ip.run_cell(
-        """%%sql --with positive_x --save final
+""")
+    ip.run_cell("""%%sql --with positive_x --save final
 SELECT * FROM positive_x
-"""
-    )
+""")
     cell_final_query = ip.run_cell("%sqlcmd snippets final").result
     assert (
         cell_final_query == "WITH `positive_x` AS (\n\nSELECT * FROM number_table\n\n"

@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.0
+    jupytext_version: 1.19.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -188,12 +188,10 @@ By default, JupySQL reads connections from `~/.jupysql/connections.ini`, but you
 ```{code-cell} ipython3
 from pathlib import Path
 
-_ = Path("connections.ini").write_text(
-    """
+_ = Path("connections.ini").write_text("""
 [mydb]
 drivername = duckdb
-"""
-)
+""")
 ```
 
 ```{code-cell} ipython3
@@ -347,13 +345,11 @@ result.csv(filename="my_data.csv")
 from pathlib import Path
 
 # generate sql file
-Path("my-query.sql").write_text(
-    """
+Path("my-query.sql").write_text("""
 SELECT *
 FROM my_data
 LIMIT 3
-"""
-)
+""")
 ```
 
 ```{code-cell} ipython3

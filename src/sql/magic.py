@@ -47,7 +47,6 @@ from sql._current import _set_sql_magic
 
 from ploomber_core.dependencies import check_installed
 
-
 try:
     from pandas.core.frame import DataFrame, Series
 except ModuleNotFoundError:
@@ -432,10 +431,8 @@ class SqlMagic(Magics, Configurable):
                         )
                     else:
                         command.set_sql_with(with_)
-                        display.message(
-                            f"Generating CTE with stored snippets: \
-{util.pretty_print(with_)}"
-                        )
+                        display.message(f"Generating CTE with stored snippets: \
+{util.pretty_print(with_)}")
                 else:
                     with_ = None
         else:

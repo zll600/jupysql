@@ -996,13 +996,11 @@ def test_error_if_trying_to_execute_multiple_statements(
 
     with pytest.raises(NotImplementedError) as excinfo:
         method = getattr(conn, execute_method)
-        method(
-            """
+        method("""
 CREATE TABLE foo (bar INT);
 INSERT INTO foo VALUES (42), (43);
 SELECT * FROM foo LIMIT 1;
-"""
-        )
+""")
 
     assert str(excinfo.value) == "Only one statement is supported."
 

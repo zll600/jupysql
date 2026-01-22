@@ -5,7 +5,6 @@ from sqlalchemy import create_engine
 from sql.connection import SQLAlchemyConnection
 from sql import plot
 
-
 urllib.request.urlretrieve(
     "https://raw.githubusercontent.com/plotly/datasets/master/iris-data.csv",
     "iris.csv",

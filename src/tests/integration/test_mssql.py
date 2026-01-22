@@ -14,12 +14,10 @@ def test_create_table_with_indexed_df(ip_with_MSSQL, test_table_name_dict):
         pass
 
     # Prepare DF
-    ip_with_MSSQL.run_cell(
-        f"""results = %sql\
+    ip_with_MSSQL.run_cell(f"""results = %sql\
                     SELECT TOP 15 *\
                     FROM {test_table_name_dict['taxi']}
-                    """
-    )
+                    """)
     ip_with_MSSQL.run_cell(
         f"{test_table_name_dict['new_table_from_df']} = results.DataFrame()"
     )
